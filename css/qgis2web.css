@@ -2,10 +2,6 @@
         #map {
             background-color: #ffffff
         }
-        th {
-            text-align: left;
-            vertical-align: top;
-        }
         .info {
             padding: 6px 8px;
             font: 14px/16px Arial, Helvetica, sans-serif;
@@ -23,29 +19,30 @@
             padding-right: 10px;
         }
         .leaflet-popup-scrolled {
-            width:auto!important;
-            height: auto!important;
-            overflow: auto;
-            max-height: 70vw;
-            max-width: 70vw;
             border-bottom: unset!important;
             border-top: unset!important;
         }
         .leaflet-popup-content{
-            max-height: 70vw;
+            max-height: 70vh;
             max-width: 70vw;
-            overflow: auto;
         }
-        th {
+        .leaflet-popup-content.media{
+            width: auto!important;
+            height: auto!important;
+        }
+        .leaflet-popup-content th {
+            text-align: left;
+            vertical-align: top;
             min-width: 75px;
         }
-        td {
+        .leaflet-popup-content td {
             min-width: 75px;
         }
-        td img {
-            max-height: 50vw;
-            max-width: 50vw;
+        .leaflet-popup-content td img {
+            max-height: 60vh;
+            max-width: 60vw;
         }
+
         .leaflet-tooltip {
             background: none;
             box-shadow: none;
@@ -56,7 +53,7 @@
         }
         }
         .fa, .leaflet-container, a {
-            color: #000000 !important;
+            color: #444444 !important;
         }
         .leaflet-control-zoom-in, .leaflet-control-zoom-out,
         .leaflet-control-locate a,
@@ -65,14 +62,14 @@
          .leaflet-control-measure {
             background-color: #f8f8f8 !important;
             border-radius: 0px !important;
-            color: #000000 !important;
+            color: #444444 !important;
         }
         .abstract {
             font: bold 18px 'Lucida Console', Monaco, monospace;
             text-indent: 1px;
             background-color: #f8f8f8 !important;
             width: 30px !important;
-            color: #000000 !important;
+            color: #444444 !important;
             height: 30px !important;
             text-align: center !important;
             line-height: 30px !important;
@@ -81,7 +78,7 @@
             padding: 6px 8px;
             font: 12px/1.5 "Helvetica Neue", Arial, Helvetica, sans-serif;
             background-color:#f8f8f8 !important;
-            color: #000000 !important;
+            color: #444444 !important;
             box-shadow: 0 0 15px rgba(0,0,0,0.2);
             border-radius: 5px;
             max-width: 40%;
@@ -138,7 +135,7 @@
             height: 30px !important;
             border-radius: 0px !important;
             background-color: #f8f8f8 !important;
-            color: #000000 !important;
+            color: #444444 !important;
             font-size: 13px;
             line-height: 30px;
             text-align: center;

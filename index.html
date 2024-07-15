@@ -13,24 +13,14 @@
         <style>
         #map {
 			position:absolute;
-            width: 100%;
-            height: 100%;
-        }
-        #legend{
-            position:absolute;
-            bottom: 0;
-            left:0;
-            margin-bottom: 30px;
-            margin-left: 10px;
+            width: 95%;
+            height: 95%;
         }
         </style>
-        <title></title>
+        <title>Evergreen Cemetery - Leadville, CO</title>
     </head>
     <body>
         <div id="map">
-        </div>
-        <div id="legend">
-        stuff in our legend
         </div>
         <script src="js/qgis2web_expressions.js"></script>
         <script src="js/leaflet.js"></script>
@@ -46,11 +36,12 @@
         <script src="data/Graves_2.js"></script>
         <script>
         var map = L.map('map', {
-            zoomControl:true, maxZoom:28, minZoom:1
-        }).fitBounds([[39.25192290545569,-106.30555044425856],[39.251929921857375,-106.30494727196705]]);
+            zoomControl:false, maxZoom:28, minZoom:1
+        })
         var hash = new L.Hash(map);
-        map.attributionControl.setPrefix('<a href="https://github.com/tomchadwin/qgis2web" target="_blank">qgis2web</a> &middot; <a href="https://www.historycolorado.org/healy-house-museum-dexter-cabin" title="Click here for link to Healy House in Leadville, CO">Healy House</a> ');
+        map.attributionControl.setPrefix('<a href="https://www.historycolorado.org/healy-house-museum-dexter-cabin" title="Click here for link to Healy House in Leadville, CO">Healy House</a> &middot; <a href="https://github.com/tomchadwin/qgis2web" target="_blank">qgis2web</a> &middot; <a href="https://leafletjs.com" title="A JS library for interactive maps">Leaflet</a> &middot; <a href="https://qgis.org">QGIS</a>');
         var autolinker = new Autolinker({truncate: {length: 30, location: 'smart'}});
+        // remove popup's row if "visible-with-data"
         function removeEmptyRowsFromPopupContent(content, feature) {
          var tempDiv = document.createElement('div');
          tempDiv.innerHTML = content;
@@ -64,17 +55,38 @@
          }
          return tempDiv.innerHTML;
         }
-        document.querySelector(".leaflet-popup-pane").addEventListener("load", function(event) {
-          var tagName = event.target.tagName,
-            popup = map._popup;
-          // Also check if flag is already set.
-          if (tagName === "IMG" && popup && !popup._updated) {
-            popup._updated = true; // Set flag to prevent looping.
-            popup.update();
-          }
-        }, true);
+        // add class to format popup if it contains media
+		function addClassToPopupIfMedia(content, popup) {
+			var tempDiv = document.createElement('div');
+			tempDiv.innerHTML = content;
+			if (tempDiv.querySelector('td img')) {
+				popup._contentNode.classList.add('media');
+					// Delay to force the redraw
+					setTimeout(function() {
+						popup.update();
+					}, 10);
+			} else {
+				popup._contentNode.classList.remove('media');
+			}
+		}
+        var title = new L.Control({'position':'topleft'});
+        title.onAdd = function (map) {
+            this._div = L.DomUtil.create('div', 'info');
+            this.update();
+            return this._div;
+        };
+        title.update = function () {
+            this._div.innerHTML = '<h2>Evergreen Cemetery - Leadville, CO</h2>';
+        };
+        title.addTo(map);
+        var zoomControl = L.control.zoom({
+            position: 'topleft'
+        }).addTo(map);
         var bounds_group = new L.featureGroup([]);
         function setBounds() {
+            if (bounds_group.getLayers().length) {
+                map.fitBounds(bounds_group.getBounds());
+            }
         }
         map.createPane('pane_BaseMap_0');
         map.getPane('pane_BaseMap_0').style.zIndex = 400;
@@ -116,11 +128,11 @@
                         <td class="visible-with-data" id="path">' + (feature.properties['path'] !== null ? autolinker.link(feature.properties['path'].toLocaleString()) : '') + '</td>\
                     </tr>\
                 </table>';
-            layer.bindPopup(popupContent, {maxHeight: 400});
-            var popup = layer.getPopup();
-            var content = popup.getContent();
-            var updatedContent = removeEmptyRowsFromPopupContent(content, feature);
-            popup.setContent(updatedContent);
+            var content = removeEmptyRowsFromPopupContent(popupContent, feature);
+			layer.on('popupopen', function(e) {
+				addClassToPopupIfMedia(content, e.popup);
+			});
+			layer.bindPopup(content, { maxHeight: 400 });
         }
 
         function style_BlocksLots_1_0() {
@@ -159,7 +171,7 @@
                         <td class="visible-with-data" id="Location B/L/G">' + (feature.properties['Location B/L/G'] !== null ? autolinker.link(feature.properties['Location B/L/G'].toLocaleString()) : '') + '</td>\
                     </tr>\
                     <tr>\
-                        <th scope="row">Marker Present</th>\
+                        <th scope="row">Is Marker Present?</th>\
                         <td class="visible-with-data" id="Marker Present">' + (feature.properties['Marker Present'] !== null ? autolinker.link(feature.properties['Marker Present'].toLocaleString()) : '') + '</td>\
                     </tr>\
                     <tr>\
@@ -171,51 +183,51 @@
                         <td class="visible-with-data" id="Surname">' + (feature.properties['Surname'] !== null ? autolinker.link(feature.properties['Surname'].toLocaleString()) : '') + '</td>\
                     </tr>\
                     <tr>\
-                        <th scope="row">age-at-death</th>\
+                        <th scope="row">Age at Death</th>\
                         <td class="visible-with-data" id="age-at-death">' + (feature.properties['age-at-death'] !== null ? autolinker.link(feature.properties['age-at-death'].toLocaleString()) : '') + '</td>\
                     </tr>\
                     <tr>\
-                        <th scope="row">age_category</th>\
+                        <th scope="row">Age Category</th>\
                         <td>' + (feature.properties['age_category'] !== null ? autolinker.link(feature.properties['age_category'].toLocaleString()) : '') + '</td>\
                     </tr>\
                     <tr>\
-                        <th scope="row">tm_Date of Death</th>\
+                        <th scope="row">Date of Death</th>\
                         <td class="visible-with-data" id="tm_Date of Death">' + (feature.properties['tm_Date of Death'] !== null ? autolinker.link(feature.properties['tm_Date of Death'].toLocaleString()) : '') + '</td>\
                     </tr>\
                     <tr>\
-                        <th scope="row">j_Surname</th>\
+                        <th scope="row">Last Name</th>\
                         <td class="visible-with-data" id="j_Surname">' + (feature.properties['j_Surname'] !== null ? autolinker.link(feature.properties['j_Surname'].toLocaleString()) : '') + '</td>\
                     </tr>\
                     <tr>\
-                        <th scope="row">j_Forename</th>\
+                        <th scope="row">First Name</th>\
                         <td class="visible-with-data" id="j_Forename">' + (feature.properties['j_Forename'] !== null ? autolinker.link(feature.properties['j_Forename'].toLocaleString()) : '') + '</td>\
                     </tr>\
                     <tr>\
-                        <th scope="row">j_Nationality</th>\
+                        <th scope="row">Nationality</th>\
                         <td class="visible-with-data" id="j_Nationality">' + (feature.properties['j_Nationality'] !== null ? autolinker.link(feature.properties['j_Nationality'].toLocaleString()) : '') + '</td>\
                     </tr>\
                     <tr>\
-                        <th scope="row">j_Section</th>\
+                        <th scope="row">Section</th>\
                         <td class="visible-with-data" id="j_Section">' + (feature.properties['j_Section'] !== null ? autolinker.link(feature.properties['j_Section'].toLocaleString()) : '') + '</td>\
                     </tr>\
                     <tr>\
-                        <th scope="row">j_Block</th>\
+                        <th scope="row">Block</th>\
                         <td class="visible-with-data" id="j_Block">' + (feature.properties['j_Block'] !== null ? autolinker.link(feature.properties['j_Block'].toLocaleString()) : '') + '</td>\
                     </tr>\
                     <tr>\
-                        <th scope="row">j_Lot</th>\
+                        <th scope="row">Lot</th>\
                         <td class="visible-with-data" id="j_Lot">' + (feature.properties['j_Lot'] !== null ? autolinker.link(feature.properties['j_Lot'].toLocaleString()) : '') + '</td>\
                     </tr>\
                     <tr>\
-                        <th scope="row">j_Grave</th>\
+                        <th scope="row">Grave</th>\
                         <td class="visible-with-data" id="j_Grave">' + (feature.properties['j_Grave'] !== null ? autolinker.link(feature.properties['j_Grave'].toLocaleString()) : '') + '</td>\
                     </tr>\
                 </table>';
-            layer.bindPopup(popupContent, {maxHeight: 400});
-            var popup = layer.getPopup();
-            var content = popup.getContent();
-            var updatedContent = removeEmptyRowsFromPopupContent(content, feature);
-            popup.setContent(updatedContent);
+            var content = removeEmptyRowsFromPopupContent(popupContent, feature);
+			layer.on('popupopen', function(e) {
+				addClassToPopupIfMedia(content, e.popup);
+			});
+			layer.bindPopup(content, { maxHeight: 400 });
         }
 
         function style_Graves_2_0(feature) {
@@ -322,6 +334,21 @@
         });
         bounds_group.addLayer(layer_Graves_2);
         map.addLayer(layer_Graves_2);
+        var baseMaps = {};
+        var overlaysTree = [
+            {label: 'Graves<br /><table><tr><td style="text-align: center;"><img src="legend/Graves_2_Adult0.png" /></td><td>Adult</td></tr><tr><td style="text-align: center;"><img src="legend/Graves_2_Child1.png" /></td><td>Child</td></tr><tr><td style="text-align: center;"><img src="legend/Graves_2_AgeUnderminded2.png" /></td><td>Age Underminded</td></tr><tr><td style="text-align: center;"><img src="legend/Graves_2_YoungPerson3.png" /></td><td>Young Person</td></tr><tr><td style="text-align: center;"><img src="legend/Graves_2_4.png" /></td><td></td></tr></table>', layer: layer_Graves_2},
+            {label: '<img src="legend/BlocksLots_1.png" /> Blocks & Lots', layer: layer_BlocksLots_1},
+            {label: "Base Map", layer: layer_BaseMap_0},]
+        var lay = L.control.layers.tree(null, overlaysTree,{
+            //namedToggle: true,
+            //selectorBack: false,
+            //closedSymbol: '&#8862; &#x1f5c0;',
+            //openedSymbol: '&#8863; &#x1f5c1;',
+            //collapseAll: 'Collapse all',
+            //expandAll: 'Expand all',
+            collapsed: true,
+        });
+        lay.addTo(map);
         setBounds();
         L.ImageOverlay.include({
             getBounds: function () {
