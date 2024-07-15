@@ -36,9 +36,9 @@
         <script>
         var map = L.map('map', {
             zoomControl:true, maxZoom:28, minZoom:1
-        }).fitBounds([[39.25206290545569,-106.30555044425856],[39.252521521857375,-106.30494727196705]]);
+        }).fitBounds([[39.25192290545569,-106.30555044425856],[39.251929921857375,-106.30494727196705]]);
         var hash = new L.Hash(map);
-        map.attributionControl.setPrefix('<a href="https://github.com/tomchadwin/qgis2web" target="_blank">qgis2web</a> &middot; <a href="https://leafletjs.com" title="A JS library for interactive maps">Leaflet</a> &middot; <a href="https://qgis.org">QGIS</a>');
+        map.attributionControl.setPrefix('<a href="https://github.com/tomchadwin/qgis2web" target="_blank">qgis2web</a> &middot; <a href="https://www.historycolorado.org/healy-house-museum-dexter-cabin" title="Click here for link to Healy House in Leadville, CO">Healy House</a> ');
         var autolinker = new Autolinker({truncate: {length: 30, location: 'smart'}});
         function removeEmptyRowsFromPopupContent(content, feature) {
          var tempDiv = document.createElement('div');
